@@ -21,6 +21,9 @@ registerUser = async (req, res) => {
     }
 };
 
+
+
+
 checkEmailExists = async (req, res, next) => {
     try {
         const email = req.body.email;
@@ -103,5 +106,26 @@ getUserDetails = async (req, res) => {
 }
 
 
-module.exports = { registerUser, checkEmailExists, checkUsernameExists, loginUser, getUserDetails };
+getFilteredUser = async (req,res)=>{
+
+    try {
+        let filter = {};
+        Object.assign(filter, req.body);
+        console.log(filter);//needs test
+        let data = await User.find(filter, { username: 1, email: 1, password: 1, isAdmin : 1, dateRegistered: 1}).sort({email:1})
+            if(data.length < 1){
+                return res.status(200).json({message:'No user(s) found.', count:result.length})
+            }
+            return res.status(200).json({message:`Search complete:`,count:result.length, users: data });         
+        }
+
+   catch (err) {
+        console.log(err);
+        return res.status(400).json({error:err});
+    }
+
+}
+
+
+module.exports = { registerUser, checkEmailExists, checkUsernameExists, loginUser, getUserDetails, getFilteredUser};
 
