@@ -20,4 +20,11 @@ router.get(
     userController.getUserDetails
 );
 
+
+router.get(
+    "/filter",
+    userController.getFilteredUser
+);
+
+
 module.exports = router;
