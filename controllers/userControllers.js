@@ -4,22 +4,25 @@ const auth = require("../auth.js");
 
 registerUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, fname, mname, lname } = req.body;
         const newUser = new User({
 
             email: email,
-            password: bcrypt.hashSync(password, 10)
-
+            password: bcrypt.hashSync(password, 10),
+            name: {
+                fname: fname,
+                mname: mname,
+                lname: lname
+            }
         });
         console.log(email);
         await newUser.save();
-        
-        console.log("savedUser");
-        return res.status(200).send(`New user registered`);
+
+        return res.status(200).send(newUser);
 
     } catch (error) {
         console.error(error);
-        return res.status(500).send('An error occurred while processing your request.');
+        return res.status(500).send(false)
     }
 };
 
@@ -32,15 +35,17 @@ checkEmailExists = async (req, res, next) => {
         const existingEmail = await User.findOne({ email: email });
 
         if (existingEmail) {
-            const emailStr = email;
-            return res.send(`Email "${emailStr}" is already registered.`)
+            
+            return res.send({
+                emailExists: true
+            });
 
         } else {
             next();
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).send('An error occurred while processing your request.');
+        return res.status(500).send(false)
     }
 };
 
@@ -51,7 +56,9 @@ loginUser = async (req, res) => {
         const existingUser = await User.findOne({ email: email });
 
         if (!existingUser) {
-            res.send(`User not found. Register first!`);
+            res.send({
+                userNotFound: true
+            })
         } else {
             const isPasswordCorrect = bcrypt.compareSync(
                 password, existingUser.password
@@ -62,7 +69,9 @@ loginUser = async (req, res) => {
                     accessToken: token
                 });
             } else {
-                res.send(`Incorrect password`);
+                res.send({
+                    incorrectPassword: true
+                });
             }
         }
 
@@ -81,8 +90,6 @@ getUserDetails = async (req, res) => {
 
         userData.password = "******";
         res.send(userData);
-
-
     } catch (error) {
         console.error(error);
         return res.status(500).send('An error occurred while processing your request.');

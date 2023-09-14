@@ -6,6 +6,7 @@ const cors =require("cors");
 const userRoutes= require("./routes/userRoutes.js");
 const businessUnitRoutes = require("./routes/businessUnitRoutes");
 const skillRoutes = require("./routes/skillRoutes.js");
+const techCertRoutes = require("./routes/techCertRoutes.js");
 
 const app= express();
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(express.urlencoded({extended: true}));
 app.use("/account",userRoutes);
 app.use("/bu",businessUnitRoutes);
 app.use("/skill",skillRoutes);
+app.use("/cert", techCertRoutes);
 
 const dbConnection = process.env.localURI;
 const port = 4040;

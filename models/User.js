@@ -47,7 +47,9 @@ const userSchema = new mongoose.Schema({
         default:""
     }, 
     dateHired:{
-        type: Date
+        type: Date,
+        required: [true, "date hired is required"],
+        default: new Date(),
     },
     contract:{
             rate: {
