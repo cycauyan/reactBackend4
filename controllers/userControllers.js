@@ -115,14 +115,52 @@ getAllUserDetails = async (req, res) => {
 getFilteredUser = async (req,res)=>{
 
     try {
-        let filter = {};
-        Object.assign(filter, req.body);
-        console.log(filter);//needs test 
-        let data = await User.find(filter).sort({email:1}) //, { username: 1, email: 1, password: 1, isAdmin : 1, dateRegistered: 1}
-            if(data.length < 1){
-                return res.status(200).json({message:'No user(s) found.', count:data.length})
-            }
-            return res.status(200).json({message:`Search complete:`,count:data.length, users: data });         
+        let filter = {
+            skills:req.body.skills,
+            name: req.body.name,
+            businessUnit: req.body.businessUnit
+        };
+        let query = User.find();
+        let queryResult = [];
+
+        // Object.assign(filter, req.body);
+        if (filter.skills && filter.businessUnit){
+            console.log(filter.skills + " and " + filter.businessUnit);
+            queryResult = await query.where(`skills.mainSkill`).in(`${filter.skills}`).where(`companyProfile.businessUnitOff`).equals(`${filter.businessUnit}`);
+            return res.status(200).json({result:queryResult});
+        }
+
+        if (filter.skills){
+            console.log(filter.skills);
+            queryResult = await query.or({$or:[
+                //this query checks whether filter.skills is in mainSkill,subskill,lvl1,lv2,lv3,lv4,l5
+                {'skills.mainSkill':{ $in: filter.skills }},
+                {'skills.subSkill':{ $in: filter.skills }},
+                {'skills.lv1':{ $in: filter.skills }},
+                {'skills.lv2':{ $in: filter.skills }},
+                {'skills.lv3':{ $in: filter.skills }},
+                {'skills.lv4':{ $in: filter.skills }},
+                {'skills.lv5':{ $in: filter.skills }}
+            ]});
+            return res.status(200).json({count:queryResult.length,result:queryResult});
+        }
+
+        if (filter.name && filter.businessUnit){
+            console.log(filter.name);
+            queryResult = await query.or([{'name.fname':`${filter.name}`},{'name.mname':`${filter.name}`},{'name.lname':`${filter.name}`}]).where(`companyProfile.businessUnitOff`).equals(`${filter.businessUnit}`);
+            return res.status(200).json({result:queryResult, count:queryResult.length});
+        }
+
+
+        if (filter.name){
+            console.log(filter.name);
+            queryResult = await query.or([{'name.fname':`${filter.name}`},{'name.mname':`${filter.name}`},{'name.lname':`${filter.name}`}]);
+            return res.status(200).json({result:queryResult, count:queryResult.length});
+        }
+
+    
+
+         
         }
 
    catch (err) {

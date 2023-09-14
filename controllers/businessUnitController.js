@@ -7,7 +7,6 @@ checkBusinessUnitExists = async (req, res, next) => {
     try {
         const buName = req.body.name;
         const existingBU = await BusinessUnit.findOne({ name: buName });
-
         if (existingBU) {
             return res.send(` "${buName}" already exists.`)
         } else {
