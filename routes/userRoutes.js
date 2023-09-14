@@ -2,11 +2,10 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userControllers.js");
 
-
+//endpoints
 router.post(
     "/register",
     userController.checkEmailExists,
-    userController.checkUsernameExists,
     userController.registerUser
 );
 
@@ -20,11 +19,14 @@ router.get(
     userController.getUserDetails
 );
 
-
 router.get(
     "/filter",
     userController.getFilteredUser
 );
+
+router.put(
+   '/updateuser/:userId',  userController.updateUser
+)
 
 
 module.exports = router;

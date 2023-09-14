@@ -4,15 +4,17 @@ const auth = require("../auth.js");
 
 registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { email, password } = req.body;
         const newUser = new User({
-            username: username,
+
             email: email,
             password: bcrypt.hashSync(password, 10)
 
         });
-
+        console.log(email);
         await newUser.save();
+        
+        console.log("savedUser");
         return res.status(200).send(`New user registered`);
 
     } catch (error) {
@@ -42,29 +44,11 @@ checkEmailExists = async (req, res, next) => {
     }
 };
 
-checkUsernameExists = async (req, res, next) => {
-    try {
-        const username = req.body.username;
-        const existingUsername = await User.findOne({ username: username });
-
-        if (existingUsername) {
-            const nameStr = username;
-            return res.send(`Username "${nameStr}" is already registered.`)
-
-        } else {
-            next();
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send('An error occurred while processing your request.');
-    }
-};
-
 
 loginUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        const existingUser = await User.findOne({ $or: [{ email: email }, { username: username }] });
+        const { email, password } = req.body;
+        const existingUser = await User.findOne({ email: email });
 
         if (!existingUser) {
             res.send(`User not found. Register first!`);
@@ -127,5 +111,84 @@ getFilteredUser = async (req,res)=>{
 }
 
 
-module.exports = { registerUser, checkEmailExists, checkUsernameExists, loginUser, getUserDetails, getFilteredUser};
+updateUser = async (req,res) =>{
+    
+    try{
+
+    const payload = auth.getPayload(req.headers.authorization);
+    const userId = req.params.userId;
+    console.log(payload);
+    console.log(userId);
+
+    let updatedUser = {
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 10),
+    isAdmin: req.body.isAdmin,
+    dateRegistered: req.body.dateRegistered,
+    name: {
+        fname: req.body.fname,
+        mname: req.body.mname,
+        lname: req.body.lname
+    },
+    nickName: req.body.nickName,
+    katakananame: req.body.katakanaName, 
+    resume: req.body.resumeLink, 
+    dateHired:req.body.dateHired,
+    contract:{
+            rate: req.body.rate,
+            ibmRate:req.body.ibmRate,
+            ubicomRate:req.body.ubicomRate,
+            poUntil:req.body.poUntil
+    },
+    actionBatch: req.body.actionBatch, 
+    yearOfExperiencePreAWS: req.body.yearOfExperiencePreAWS,
+    yearOfExperience: req.body.yearOfExperience, 
+    techCertification: req.body.techCertification, //[{name:{type:String}, link: {type:String}}],
+    skills : {
+        industrySkill:req.body.industrySkill, //array of String
+        mainSkill: req.body.mainSkill, 
+        subSkill: req.body.subSkill,
+        lv1: req.body.lv1,
+        lv2: req.body.lv2,
+        lv3: req.body.lv3,
+        lv4: req.body.lv4,
+        lv5: req.body.lv5,
+        focusSkill: req.body.focusSkill
+        },
+    nihongo: req.body.nihongo, 
+    companyProfile:{
+        businessUnitOff: req.body.businessUnitOff,
+        businessUnitAss: req.body.businessUnitAss, 
+        position: req.body.position
+    }, 
+    currentAssignment:req.body.currentAssignment,
+    assignmentLocation: req.body.assignmentLocation,
+    candidateFor: req.body.candidateFor, 
+    location1:   req.body.location1, 
+    location2: req.body.location2,
+    contactNum: req.body.contactNum,
+    passportExpiration: req.body.passportExpiration,
+    remarks: req.body.remarks
+    }
+        if (payload.isAdmin){
+            let result = await User.findByIdAndUpdate(userId, updatedUser, {new:true})
+                return res.status(200).json({message:"Updated successfully!", user:result})
+        }
+        else{
+            //modify this code or add if else to return details editable by user
+            return res.status(403).json({error:"You do not have admin priveleges.", isAdmin:false})
+        }
+    }
+    catch(error){
+        console.log(error);
+        return res.json({error:error});
+    }
+}
+
+
+
+
+// checkUsernameExists,
+
+module.exports = { registerUser, checkEmailExists,  loginUser, getUserDetails, getFilteredUser, updateUser};
 

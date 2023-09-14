@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: [true, "Username is required"],
-    },
+
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -50,38 +47,38 @@ const userSchema = new mongoose.Schema({
         default:""
     }, 
     dateHired:{
-        type: Date,
-        required: [true, "date hired is required"]
+        type: Date
     },
     contract:{
-        price:{
             rate: {
-                type:Number
+                type:Number,
+                default:0
             }, 
             ibmRate:{
-                type:Number
+                type:Number,
+                default:0
             }, 
             ubicomRate:{
-                type:Number
-            } 
-        },
-        poUntil:{type:Date} 
+                type:Number,
+                default:0
+            },
+            poUntil:{type:Date} 
     },
     actionBatch: {type:String}, 
     yearOfExperiencePreAWS: {type:Number},
     yearOfExperience: {type:Number}, 
     techCertification: [{name:{type:String}, link: {type:String}}],
-    skills : [{
-        industrySkill:[{type: mongoose.Schema.Types.ObjectId, ref: 'IndustrySkill'}],
-        mainSkill: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}], 
-        subSkill: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        L1: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        L2: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        L3: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        L4: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        L5: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        focusSkill: [{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}],
-        }],
+    skills : {
+        industrySkill:[{type:String}], //[{type: mongoose.Schema.Types.ObjectId, ref: 'IndustrySkill'}]
+        mainSkill: [{type:String}], //[{type: mongoose.Schema.Types.ObjectId, ref: 'Skill'}]
+        subSkill: [{type:String}],
+        lv1: [{type:String}],
+        lv2: [{type:String}],
+        lv3: [{type:String}],
+        lv4: [{type:String}],
+        lv5: [{type:String}],
+        focusSkill: [{type:String}]
+        },
     nihongo: {type:String}, 
     companyProfile:{
         businessUnitOff: {type:String},
@@ -91,7 +88,6 @@ const userSchema = new mongoose.Schema({
     currentAssignment:{type:String},
     assignmentLocation: {type:String}, 
     candidateFor: {type:String}, 
-    email: {type:String},
     location1: {type:String}, 
     location2: {type:String}, 
     contactNum: {type:String},
