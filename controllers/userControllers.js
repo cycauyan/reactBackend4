@@ -97,17 +97,32 @@ getUserDetails = async (req, res) => {
 }
 
 
+getAllUserDetails = async (req, res) => {
+    try {
+        // const payload = auth.getPayload(req.headers.authorization);
+        // console.log(payload);
+        const userData = await User.find();
+
+        userData.password = "******";
+        res.send(userData);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('An error occurred while processing your request.');
+    }
+}
+
+
 getFilteredUser = async (req,res)=>{
 
     try {
         let filter = {};
         Object.assign(filter, req.body);
-        console.log(filter);//needs test
-        let data = await User.find(filter, { username: 1, email: 1, password: 1, isAdmin : 1, dateRegistered: 1}).sort({email:1})
+        console.log(filter);//needs test 
+        let data = await User.find(filter).sort({email:1}) //, { username: 1, email: 1, password: 1, isAdmin : 1, dateRegistered: 1}
             if(data.length < 1){
-                return res.status(200).json({message:'No user(s) found.', count:result.length})
+                return res.status(200).json({message:'No user(s) found.', count:data.length})
             }
-            return res.status(200).json({message:`Search complete:`,count:result.length, users: data });         
+            return res.status(200).json({message:`Search complete:`,count:data.length, users: data });         
         }
 
    catch (err) {
@@ -197,5 +212,5 @@ updateUser = async (req,res) =>{
 
 // checkUsernameExists,
 
-module.exports = { registerUser, checkEmailExists,  loginUser, getUserDetails, getFilteredUser, updateUser};
+module.exports = { registerUser, checkEmailExists,  loginUser,getAllUserDetails, getUserDetails, getFilteredUser, updateUser};
 

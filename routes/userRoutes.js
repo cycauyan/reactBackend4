@@ -20,6 +20,11 @@ router.get(
 );
 
 router.get(
+    "/getall",
+    userController.getAllUserDetails
+);
+
+router.get(
     "/filter",
     userController.getFilteredUser
 );
