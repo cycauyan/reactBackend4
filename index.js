@@ -7,6 +7,7 @@ const userRoutes= require("./routes/userRoutes.js");
 const businessUnitRoutes = require("./routes/businessUnitRoutes");
 const skillRoutes = require("./routes/skillRoutes.js");
 const techCertRoutes = require("./routes/techCertRoutes.js");
+const industrySkillRoutes = require("./routes/industrySkillRoutes.js");
 
 const app= express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use("/account",userRoutes);
 app.use("/bu",businessUnitRoutes);
 app.use("/skill",skillRoutes);
 app.use("/cert", techCertRoutes);
+app.use("/industry", industrySkillRoutes);
 
 const dbConnection = process.env.localURI;
 const port = 4040;

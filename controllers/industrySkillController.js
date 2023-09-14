@@ -22,7 +22,7 @@ createIndustrySkill = async (req, res) => {
         const payload = auth.getPayload(req.headers.authorization);
         const { name } = req.body;
              if (payload.isAdmin){
-                const newIndustrySkill = new Skill({
+                const newIndustrySkill = new IndustrySkill({
                     name: name,
                 });
                 if(name.trim()!==""){
@@ -50,13 +50,14 @@ updateIndustrySkill = async (req,res)=>{
             name:req.body.name
         }
         if(payload.isAdmin){
-            let result = await Skill.findByIdAndUpdate(industrySkillId, updatedIndustrySkill, {new:true});
+            let result = await IndustrySkill.findByIdAndUpdate(industrySkillId, updatedIndustrySkill, {new:true});
             return res.status(200).json({message:"Updated successfully!", updated:result});
         }
         else{
             return res.status(403).json({error:"You do not have admin priveleges.", isAdmin:false})
         }
     } catch (error) {
+        console.log(error);
         return res.status(400).send('An error occurred while processing your request.');
     }
 }
@@ -64,8 +65,8 @@ updateIndustrySkill = async (req,res)=>{
 
 getAllIndustrySkill = async (req,res)=>{
     try {
-        const allSkill = await Skill.find();
-        return res.status(200).json({skills:allSkill});        
+        const allIndustrySkill = await IndustrySkill.find();
+        return res.status(200).json({industrySkill:allIndustrySkill});        
     } catch (error) {
         return res.status(400).send('An error occurred while processing your request.')
     }
@@ -74,4 +75,4 @@ getAllIndustrySkill = async (req,res)=>{
 
 
 
-module.exports = { checkSkillExists, createSkill, updateSkill, getAllSkill};
+module.exports = { checkIndustrySkillExists, createIndustrySkill, updateIndustrySkill, getAllIndustrySkill};

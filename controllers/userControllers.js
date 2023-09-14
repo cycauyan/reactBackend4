@@ -28,7 +28,6 @@ registerUser = async (req, res) => {
 
 
 
-
 checkEmailExists = async (req, res, next) => {
     try {
         const email = req.body.email;
@@ -99,12 +98,17 @@ getUserDetails = async (req, res) => {
 
 getAllUserDetails = async (req, res) => {
     try {
-        // const payload = auth.getPayload(req.headers.authorization);
-        // console.log(payload);
-        const userData = await User.find();
+        const payload = auth.getPayload(req.headers.authorization);
+        console.log(payload);
 
-        userData.password = "******";
-        res.send(userData);
+        if (payload.isAdmin){
+            const userData = await User.find();
+
+            userData.password = "******";
+            res.status(200).json({count:userData.length, userData:userData});
+        }
+
+        
     } catch (error) {
         console.error(error);
         return res.status(500).send('An error occurred while processing your request.');
@@ -123,7 +127,7 @@ getFilteredUser = async (req,res)=>{
         let query = User.find();
         let queryResult = [];
 
-        // Object.assign(filter, req.body);
+
         if (filter.skills && filter.businessUnit){
             console.log(filter.skills + " and " + filter.businessUnit);
             queryResult = await query.where(`skills.mainSkill`).in(`${filter.skills}`).where(`companyProfile.businessUnitOff`).equals(`${filter.businessUnit}`);
@@ -158,8 +162,11 @@ getFilteredUser = async (req,res)=>{
             return res.status(200).json({result:queryResult, count:queryResult.length});
         }
 
-    
-
+            let data = await User.find();
+            if(data.length<1){
+                res.send("0 results found.");
+            }
+            return res.status(200).json({count:data.length,result:data});
          
         }
 
